@@ -12,24 +12,35 @@ export const searchNotion = pMemoize(searchNotionImpl, {
 async function searchNotionImpl(
   params: types.SearchParams
 ): Promise<types.SearchResults> {
-  return fetch(api.searchNotion, {
+  const res = await fetch(api.searchNotion, {
     method: 'POST',
     body: JSON.stringify(params),
     headers: {
       'content-type': 'application/json'
     }
   })
-    .then((res) => {
-      if (res.ok) {
-        return res
-      }
 
-      // convert non-2xx HTTP responses into errors
-      const error: any = new Error(res.statusText)
-      error.response = res
-      throw error
-    })
-    .then((res) => res.json() as Promise<types.SearchResults>)
+  if (res.ok) {
+    return (await res.json()) as types.SearchResults
+  }
+
+  // Try to read JSON error details from the server and throw a helpful message
+  let errMsg = `Search request failed with status ${res.status}`
+  try {
+    const json: any = await res.json()
+    if (json) {
+      if (typeof json === 'string') errMsg = json
+      else if (json.error) errMsg = json.error
+      else if (json.details) errMsg = json.details
+    }
+  } catch (e) {
+    // ignore JSON parse errors and fall back to statusText
+    errMsg = res.statusText || errMsg
+  }
+
+  const error: any = new Error(errMsg)
+  error.response = res
+  throw error
 
   // return ky
   //   .post(api.searchNotion, {
