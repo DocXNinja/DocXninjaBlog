@@ -7,6 +7,7 @@ import { FaYoutube } from '@react-icons/all-files/fa/FaYoutube'
 import { FaZhihu } from '@react-icons/all-files/fa/FaZhihu'
 import { IoMoonSharp } from '@react-icons/all-files/io5/IoMoonSharp'
 import { IoSunnyOutline } from '@react-icons/all-files/io5/IoSunnyOutline'
+import { IoHome } from '@react-icons/all-files/io5/IoHome'
 import * as React from 'react'
 
 import * as config from '@/lib/config'
@@ -16,7 +17,11 @@ import styles from './styles.module.css'
 
 // TODO: merge the data and icons from PageSocial with the social links in Footer
 
-export function FooterImpl() {
+interface FooterProps {
+  isBlogPost?: boolean;
+}
+
+export function FooterImpl({ isBlogPost = false }: FooterProps) {
   const [hasMounted, setHasMounted] = React.useState(false)
   const { isDarkMode, toggleDarkMode } = useDarkMode()
   const currentYear = new Date().getFullYear()
@@ -34,12 +39,22 @@ export function FooterImpl() {
   }, [])
 
   return (
-    <footer className={styles.footer}>
-      <div className={styles.copyright}>
-        Copyright {currentYear} {config.author}
+    <footer className={isBlogPost ? styles.footer : styles.footerHomePage}>
+      {isBlogPost && (
+        <div className={styles.footerSection}>
+          <a href="/" className={styles.homeButton} title="Home">
+            <IoHome />
+          </a>
+        </div>
+      )}
+      
+      <div className={styles.footerSection}>
+        <span className={styles.copyright}>
+          Copyright {currentYear} {config.author}
+        </span>
       </div>
-
-      <div className={styles.settings}>
+      
+      <div className={styles.footerSection}>
         {hasMounted && (
           <a
             className={styles.toggleDarkMode}

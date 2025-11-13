@@ -214,6 +214,15 @@ export function NotionPage({
   const isLiteMode = lite === 'true'
 
   const { isDarkMode } = useDarkMode()
+  const [hasMounted, setHasMounted] = React.useState(false)
+
+  // Prevent hydration mismatch by only applying dark mode after mounting
+  React.useEffect(() => {
+    setHasMounted(true)
+  }, [])
+
+  // Use a safe dark mode value that prevents hydration mismatch
+  const safeDarkMode = hasMounted ? isDarkMode : false
 
   const siteMapPageUrl = React.useMemo(() => {
     const params: any = {}
@@ -245,7 +254,7 @@ export function NotionPage({
     [block, recordMap, isBlogPost]
   )
 
-  const footer = React.useMemo(() => <Footer />, [])
+  const footer = React.useMemo(() => <Footer isBlogPost={isBlogPost} />, [isBlogPost])
 
   if (router.isFallback) {
     return <Loading />
@@ -301,14 +310,14 @@ export function NotionPage({
       />
 
       {isLiteMode && <BodyClassName className='notion-lite' />}
-      {isDarkMode && <BodyClassName className='dark-mode' />}
+      {safeDarkMode && <BodyClassName className='dark-mode' />}
 
       <NotionRenderer
         bodyClassName={cs(
           styles.notion,
           pageId === site.rootNotionPageId && 'index-page'
         )}
-        darkMode={isDarkMode}
+        darkMode={safeDarkMode}
         components={components}
         recordMap={recordMap}
         rootPageId={site.rootNotionPageId}
@@ -318,7 +327,7 @@ export function NotionPage({
         showCollectionViewDropdown={false}
         showTableOfContents={showTableOfContents}
         minTableOfContentsItems={minTableOfContentsItems}
-        defaultPageIcon={config.defaultPageIcon}
+  defaultPageIcon={safeDarkMode ? '/favicon.png' : '/favicon.png'}
         defaultPageCover={config.defaultPageCover}
         defaultPageCoverPosition={config.defaultPageCoverPosition}
         mapPageUrl={siteMapPageUrl}

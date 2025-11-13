@@ -53,6 +53,34 @@
   gap: 0.5rem;
 }
 
+/* Brand title next to logo - matches main site styling */
+.header-brand-title {
+  margin-left: 10px;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 24px;
+  letter-spacing: 0.01em;
+  color: rgb(17, 24, 39);
+  align-self: center;
+}
+
+/* Dark mode styling for brand title */
+.dark-mode .header-brand-title {
+  color: rgb(255, 255, 255);
+}
+
+/* Increase size of header icons (home, theme switcher) */
+.notion-header .notion-nav-header-rhs .breadcrumb.button svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* Ensure consistent styling for all header navigation buttons */
+.notion-header .notion-nav-header-rhs .breadcrumb.button {
+  border: none !important;
+  background: none !important;
+}
+
 .notion-gallery-grid {
   grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
   grid-gap: 6vmin;
