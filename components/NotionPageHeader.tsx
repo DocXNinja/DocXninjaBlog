@@ -9,7 +9,7 @@ import { IoClose } from '@react-icons/all-files/io5/IoClose'
 import { IoSearchOutline } from '@react-icons/all-files/io5/IoSearchOutline'
 import cs from 'classnames'
 import * as React from 'react'
-import { Breadcrumbs, Header, Search, useNotionContext } from 'react-notion-x'
+import { Header, Search, useNotionContext } from 'react-notion-x'
 
 import { isSearchEnabled, navigationLinks, navigationStyle } from '@/lib/config'
 import { useDarkMode } from '@/lib/use-dark-mode'

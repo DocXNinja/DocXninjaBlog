@@ -33,7 +33,7 @@ async function searchNotionImpl(
       else if (json.error) errMsg = json.error
       else if (json.details) errMsg = json.details
     }
-  } catch (e) {
+  } catch {
     // ignore JSON parse errors and fall back to statusText
     errMsg = res.statusText || errMsg
   }

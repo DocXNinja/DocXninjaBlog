@@ -1,0 +1,17 @@
+(base) ➜  DocXninjaBlog git:(Blogs) npm run build  
+
+> docxninja-blog@2.0.0 build
+> next build
+
+   ▲ Next.js 15.5.6
+   - Environments: .env.local
+
+   Linting and checking validity of types  ..
+ ⚠ The Next.js plugin was not detected in your ESLint configuration. See https://nextjs.org/docs/app/api-reference/config/eslint#migrating-existing-config
+
+Failed to compile.
+
+./components/NotionPage.tsx
+277:3  Error: React Hook "React.useEffect" is called conditionally. React Hooks must be called in the exact same order in every component render. Did you accidentally call a React Hook after an early return?  react-hooks/rules-of-hooks
+
+info  - Need to disable some ESLint rules? Learn more here: https://nextjs.org/docs/app/api-reference/config/eslint#disabling-rules

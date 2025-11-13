@@ -11,11 +11,11 @@ export async function handleSearchRequest(
       : await search(searchParams)
 
     return results
-  } catch (error: any) {
-    console.error('Search error:', error)
+  } catch (err: any) {
+    console.error('Search error:', err)
     
     // Check if it's an authentication error
-    if (error?.response?.status === 401 || error?.response?.status === 403) {
+    if (err?.response?.status === 401 || err?.response?.status === 403) {
       const authError = new Error('Authentication failed. Please check your NOTION_TOKEN_V2 or NOTION_TOKEN environment variable.')
       authError.name = 'AuthenticationError'
       throw authError
@@ -24,7 +24,7 @@ export async function handleSearchRequest(
     // For non-auth errors (for example the unofficial search endpoint returning 500),
     // return an empty results set instead of failing the whole request so the UI
     // can continue to function. We still log the error for debugging.
-    console.error('Search failed (returning empty results):', error?.message || error)
+    console.error('Search failed (returning empty results):', err?.message || err)
 
     const emptyResults: types.SearchResults = {
       recordMap: {
