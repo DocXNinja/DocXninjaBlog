@@ -1,5 +1,6 @@
-import { Client } from '@notionhq/client'
 import type { SearchParameters } from '@notionhq/client/build/src/api-endpoints'
+import { Client } from '@notionhq/client'
+
 import type * as types from './types'
 
 // Initialize the official Notion client with integration token
@@ -41,9 +42,9 @@ export async function searchWithIntegration(
     }
 
     // Add properly structured block entries for each found page
-    uniquePages.forEach((item: any) => {
-      const title = item.properties?.Name?.title?.[0]?.plain_text ||
-                   item.properties?.title?.title?.[0]?.plain_text ||
+    for (const item of uniquePages) {
+      const title = (item as any).properties?.Name?.title?.[0]?.plain_text ||
+                   (item as any).properties?.title?.title?.[0]?.plain_text ||
                    'Untitled'
 
       recordMap.block[item.id] = {
@@ -64,15 +65,15 @@ export async function searchWithIntegration(
             role: 'reader',
             type: 'public_permission'
           }],
-          created_time: new Date(item.created_time).getTime(),
-          last_edited_time: new Date(item.last_edited_time).getTime(),
-          parent_id: item.parent?.database_id || item.parent?.page_id || '',
+          created_time: new Date((item as any).created_time).getTime(),
+          last_edited_time: new Date((item as any).last_edited_time).getTime(),
+          parent_id: (item as any).parent?.database_id || (item as any).parent?.page_id || '',
           parent_table: 'block',
           alive: true,
           space_id: ''
         }
       }
-    })
+    }
 
     // Convert the official API response to our expected format
     const results: types.SearchResults = {
@@ -102,7 +103,7 @@ export async function searchWithIntegration(
             if (descProp?.rich_text?.[0]?.plain_text) {
               description = descProp.rich_text[0].plain_text
               if (description.length > 100) {
-                description = description.substring(0, 100) + '...'
+                description = description.slice(0, 100) + '...'
               }
             }
           }
@@ -132,8 +133,8 @@ export async function searchWithIntegration(
     }
 
     return results
-  } catch (error) {
-    console.error('Official Notion API search error:', error)
-    throw error
+  } catch (err) {
+    console.error('Official Notion API search error:', err)
+    throw err
   }
 }

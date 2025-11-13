@@ -256,6 +256,17 @@ export function NotionPage({
 
   const footer = React.useMemo(() => <Footer isBlogPost={isBlogPost} />, [isBlogPost])
 
+  // React Hooks must be called before any early returns
+  React.useEffect(() => {
+    if (!config.isServer && block) {
+      // add important objects to the window global for easy debugging
+      const g = window as any
+      g.pageId = pageId
+      g.recordMap = recordMap
+      g.block = block
+    }
+  }, [pageId, recordMap, block])
+
   if (router.isFallback) {
     return <Loading />
   }
@@ -273,14 +284,6 @@ export function NotionPage({
     rootNotionPageId: site.rootNotionPageId,
     recordMap
   })
-
-  if (!config.isServer) {
-    // add important objects to the window global for easy debugging
-    const g = window as any
-    g.pageId = pageId
-    g.recordMap = recordMap
-    g.block = block
-  }
 
   const canonicalPageUrl = config.isDev
     ? undefined

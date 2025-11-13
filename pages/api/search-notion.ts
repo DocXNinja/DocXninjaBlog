@@ -21,16 +21,16 @@ export default async function searchNotion(
       'public, s-maxage=60, max-age=60, stale-while-revalidate=60'
     )
     res.status(200).json(results)
-  } catch (error: any) {
-    if (error.name === 'AuthenticationError') {
+  } catch (err: any) {
+    if (err.name === 'AuthenticationError') {
       return res.status(500).json({ 
-        error: error.message
+        error: err.message
       })
     }
     
     return res.status(500).json({ 
       error: 'Search failed', 
-      details: error?.message || 'Unknown error'
+      details: err?.message || 'Unknown error'
     })
   }
 }
