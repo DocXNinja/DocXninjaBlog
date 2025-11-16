@@ -53,6 +53,18 @@ export function FooterImpl({ isBlogPost = false }: FooterProps) {
           Copyright {currentYear} {config.author}
         </span>
       </div>
+
+      <div className={styles.footerSection}>
+        <a
+          href='https://blogdocxninja.vercel.app'
+          target='_blank'
+          rel='noopener noreferrer'
+          className={styles.footerLink}
+          title='Visit Blog'
+        >
+          Blog
+        </a>
+      </div>
       
       <div className={styles.footerSection}>
         {hasMounted && (

@@ -23,7 +23,6 @@ import { searchNotion } from '@/lib/search-notion'
 import { useDarkMode } from '@/lib/use-dark-mode'
 
 import { Footer } from './Footer'
-import { GitHubShareButton } from './GitHubShareButton'
 import { Loading } from './Loading'
 import { NotionPageHeader } from './NotionPageHeader'
 import { Page404 } from './Page404'
@@ -183,6 +182,7 @@ const propertyTextValue = (
   return defaultFn()
 }
 
+
 export function NotionPage({
   site,
   recordMap,
@@ -255,6 +255,68 @@ export function NotionPage({
   )
 
   const footer = React.useMemo(() => <Footer isBlogPost={isBlogPost} />, [isBlogPost])
+
+  // Inject Utterances comments into .notion-page container after render
+  React.useEffect(() => {
+    if (!isBlogPost || !hasMounted || config.isServer) return
+
+    // Find the .notion-page container
+    const notionPage = document.querySelector('.notion-page')
+    if (!notionPage) {
+      // If not found, try again after a short delay (page might still be rendering)
+      const timeout = setTimeout(() => {
+        const retryPage = document.querySelector('.notion-page')
+        if (retryPage) {
+          injectComments(retryPage)
+        }
+      }, 300)
+      return () => clearTimeout(timeout)
+    }
+
+    injectComments(notionPage)
+
+    function injectComments(container: Element) {
+      // Check if comments are already injected
+      if (container.querySelector('.utterances-comments-wrapper')) {
+        return
+      }
+
+      // Create wrapper for comments
+      const commentsWrapper = document.createElement('div')
+      commentsWrapper.className = 'utterances-comments-wrapper'
+      
+      // Create container div with proper styling classes
+      const commentsContainer = document.createElement('div')
+      commentsContainer.className = 'comments-container'
+      commentsWrapper.append(commentsContainer)
+
+      // Append to notion-page container
+      container.append(commentsWrapper)
+
+      // Initialize Utterances
+      const repo = config.github ? `${config.github}/DocXninjaBlog` : 'docXNinja/DocXninjaBlog'
+      const script = document.createElement('script')
+      script.src = 'https://utteranc.es/client.js'
+      script.setAttribute('repo', repo)
+      script.setAttribute('issue-term', 'pathname')
+      script.setAttribute('label', 'comments')
+      script.setAttribute('theme', isDarkMode ? 'github-dark' : 'github-light')
+      script.setAttribute('crossorigin', 'anonymous')
+      script.async = true
+      commentsContainer.append(script)
+    }
+
+    // Cleanup function to remove comments if component unmounts or page changes
+    return () => {
+      const notionPage = document.querySelector('.notion-page')
+      if (notionPage) {
+        const wrapper = notionPage.querySelector('.utterances-comments-wrapper')
+        if (wrapper) {
+          wrapper.remove()
+        }
+      }
+    }
+  }, [isBlogPost, hasMounted, isDarkMode])
 
   // React Hooks must be called before any early returns
   React.useEffect(() => {
@@ -339,8 +401,6 @@ export function NotionPage({
         pageAside={pageAside}
         footer={footer}
       />
-
-      <GitHubShareButton />
     </>
   )
 }

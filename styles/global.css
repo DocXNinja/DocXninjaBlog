@@ -60,3 +60,15 @@ body {
 ::-webkit-scrollbar-track {           
     background-color: var(--bg-color);
 }
+
+/* Utterances Comments Styling */
+.utterances {
+  max-width: 100% !important;
+  margin: 0 auto !important;
+}
+
+.utterances iframe {
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 auto !important;
+}

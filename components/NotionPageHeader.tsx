@@ -134,6 +134,16 @@ export function NotionPageHeader({
               .filter(Boolean)}
 
             <Link
+              href='https://blogdocxninja.vercel.app'
+              className={cs(styles.navLink, 'breadcrumb', 'button')}
+              target='_blank'
+              rel='noopener noreferrer'
+              style={{ marginRight: '0.5rem' }}
+            >
+              Blog
+            </Link>
+
+            <Link
               href='/'
               className={cs('breadcrumb', 'button')}
               aria-label='Home'
@@ -186,6 +196,16 @@ export function NotionPageHeader({
               <IoHome />
               <span>Home</span>
             </Link>
+
+            <a
+              href='https://blogdocxninja.vercel.app'
+              target='_blank'
+              rel='noopener noreferrer'
+              className={cs('breadcrumb', 'button', styles.mobileMenuItem, isDarkMode && 'dark-mode')}
+              onClick={closeMobileMenu}
+            >
+              <span>Blog</span>
+            </a>
 
             <button
               type='button'

@@ -21,6 +21,32 @@
   line-height: 1.65;
 }
 
+/* Utterances comments wrapper - injected into .notion-page */
+.utterances-comments-wrapper {
+  width: 100%;
+  margin-top: 4rem;
+  padding-top: 3rem;
+  border-top: 1px solid var(--fg-color-0);
+}
+
+.dark-mode .utterances-comments-wrapper {
+  border-top-color: rgba(255, 255, 255, 0.1);
+}
+
+.light-mode .utterances-comments-wrapper {
+  border-top-color: rgba(55, 53, 47, 0.16);
+}
+
+.utterances-comments-wrapper .comments-container {
+  width: 100%;
+  max-width: 100%;
+}
+
+.utterances-comments-wrapper iframe {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
 .index-page {
   --notion-max-width: 900px;
 }
