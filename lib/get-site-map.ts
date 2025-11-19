@@ -1,4 +1,5 @@
 import { getAllPagesInSpace, getPageProperty, uuidToId } from 'notion-utils'
+import ExpiryMap from 'expiry-map'
 import pMemoize from 'p-memoize'
 
 import type * as types from './types'
@@ -21,8 +22,10 @@ export async function getSiteMap(): Promise<types.SiteMap> {
   } as types.SiteMap
 }
 
+// Cache site map for 5 minutes (300000ms) to allow Notion updates to propagate
 const getAllPages = pMemoize(getAllPagesImpl, {
-  cacheKey: (...args) => JSON.stringify(args)
+  cacheKey: (...args) => JSON.stringify(args),
+  cache: new ExpiryMap(300000)
 })
 
 const getPage = async (pageId: string, opts?: any) => {

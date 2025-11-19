@@ -4,6 +4,7 @@ import {
   type SearchResults
 } from 'notion-types'
 import { mergeRecordMaps } from 'notion-utils'
+import ExpiryMap from 'expiry-map'
 import pMap from 'p-map'
 import pMemoize from 'p-memoize'
 
@@ -16,6 +17,7 @@ import { getTweetsMap } from './get-tweets'
 import { notion } from './notion-api'
 import { getPreviewImageMap } from './preview-images'
 
+// Cache navigation links for 5 minutes (300000ms) to allow updates to propagate
 const getNavigationLinkPages = pMemoize(
   async (): Promise<ExtendedRecordMap[]> => {
     const navigationLinkPageIds = (navigationLinks || [])
@@ -39,6 +41,9 @@ const getNavigationLinkPages = pMemoize(
     }
 
     return []
+  },
+  {
+    cache: new ExpiryMap(300000)
   }
 )
 
