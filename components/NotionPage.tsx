@@ -392,7 +392,6 @@ export function NotionPage({
         showCollectionViewDropdown={false}
         showTableOfContents={showTableOfContents}
         minTableOfContentsItems={minTableOfContentsItems}
-        defaultPageIcon={safeDarkMode ? '/favicon.png' : '/favicon.png'}
         defaultPageCover={config.defaultPageCover}
         defaultPageCoverPosition={config.defaultPageCoverPosition}
         mapPageUrl={siteMapPageUrl}

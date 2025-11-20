@@ -10,15 +10,21 @@
 .notion {
   --notion-max-width: 720px;
   --notion-header-height: 80px;
+  position: relative;
+  z-index: 1;
 }
 
 .notion-frame {
   padding: 0;
+  position: relative;
+  z-index: 1;
 }
 
 .notion-page {
   padding-bottom: calc(max(5vh, 32px)) !important;
   line-height: 1.65;
+  position: relative;
+  z-index: 1;
 }
 
 /* Utterances comments wrapper - injected into .notion-page */
@@ -251,10 +257,14 @@
 .notion-page-cover-wrapper img {
   max-width: 1200px !important;
   border-radius: 24px;
+  position: relative;
+  z-index: 1;
 }
 
 .notion-page-cover-wrapper {
   box-shadow: 2px 2px 8px 4px rgba(15, 15, 15, 0.1);
+  position: relative;
+  z-index: 1;
 }
 
 @media only screen and (max-width: 1200px) {

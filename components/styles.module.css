@@ -300,13 +300,17 @@
   }
 }
 
-/* Ensure the header allows overflow for the dropdown */
+/* Ensure the header allows overflow for the dropdown and stays above content */
 .notion-header {
   overflow: visible !important;
+  position: relative !important;
+  z-index: 1000000 !important;
 }
 
 .notion-nav-header {
   overflow: visible !important;
+  position: relative !important;
+  z-index: 1000000 !important;
 }
 
 .container {

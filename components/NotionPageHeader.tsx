@@ -87,110 +87,133 @@ export function NotionPageHeader({
   if (navigationStyle === 'default') {
     return <Header block={block} />
   }
-
+  
   return (
-    <header className='notion-header'>
-      <div className='notion-nav-header'>
-        <div className='notion-nav-header-left breadcrumbs'>
-          <Link
-            href='https://docxninja.com/'
-            className={cs('breadcrumb', 'button')}
-            aria-label='Blog Home'
-            style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
-          >
-            {isDarkMode ? (
-              <NextImage
-                src='/LogoLight.svg'
-                alt='DocXninja'
-                width={180}
-                height={45}
-                className='header-logo'
-                style={{ objectFit: 'contain' }}
-              />
-            ) : (
-              <NextImage
-                src='/LogoDark.svg'
-                alt='DocXninja'
-                width={180}
-                height={45}
-                className='header-logo'
-                style={{ objectFit: 'contain' }}
-              />
-            )}
-          </Link>
-        </div>
+    <>
+      <header className='notion-header'>
+        <div className='notion-nav-header'>
+          <div className='notion-nav-header-left breadcrumbs'>
+            <Link
+              href='https://docxninja.com/'
+              className={cs('breadcrumb', 'button')}
+              aria-label='Blog Home'
+              style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
+            >
+              {isDarkMode ? (
+                <NextImage
+                  src='/LogoLight.svg'
+                  alt='DocXninja'
+                  width={180}
+                  height={45}
+                  className='header-logo'
+                  style={{ objectFit: 'contain' }}
+                />
+              ) : (
+                <NextImage
+                  src='/LogoDark.svg'
+                  alt='DocXninja'
+                  width={180}
+                  height={45}
+                  className='header-logo'
+                  style={{ objectFit: 'contain' }}
+                />
+              )}
+            </Link>
+          </div>
 
-        {!isMobile && (
-          <div className={cs('notion-nav-header-rhs breadcrumbs', styles.desktopNav)}>
-            {navigationLinks
-              ?.map((link, index) => {
-                if (!link?.pageId && !link?.url) {
-                  return null
-                }
+          {!isMobile && (
+            <div className={cs('notion-nav-header-rhs breadcrumbs', styles.desktopNav)}>
+              {navigationLinks
+                ?.map((link, index) => {
+                  if (!link?.pageId && !link?.url) {
+                    return null
+                  }
 
-                if (link.pageId) {
+                  if (link.pageId) {
+                    return (
+                      <components.PageLink
+                        href={mapPageUrl(link.pageId)}
+                        key={index}
+                        className={cs(styles.navLink, 'breadcrumb', 'button')}
+                      >
+                        {link.title}
+                      </components.PageLink>
+                    )
+                  }
+
                   return (
-                    <components.PageLink
-                      href={mapPageUrl(link.pageId)}
+                    <components.Link
+                      href={link.url}
                       key={index}
                       className={cs(styles.navLink, 'breadcrumb', 'button')}
                     >
                       {link.title}
-                    </components.PageLink>
+                    </components.Link>
                   )
-                }
+                })
+                .filter(Boolean)}
 
-                return (
-                  <components.Link
-                    href={link.url}
-                    key={index}
-                    className={cs(styles.navLink, 'breadcrumb', 'button')}
-                  >
-                    {link.title}
-                  </components.Link>
-                )
-              })
-              .filter(Boolean)}
+              <Link
+                href='/'
+                className={cs('breadcrumb', 'button')}
+                aria-label='Home'
+                style={{ marginRight: '0.5rem' }}
+              >
+                <IoHome />
+              </Link>
 
-            <Link
-              href='/'
-              className={cs('breadcrumb', 'button')}
-              aria-label='Home'
-              style={{ marginRight: '0.5rem' }}
-            >
-              <IoHome />
-            </Link>
+              <ToggleThemeButton />
 
-            <ToggleThemeButton />
+              {isSearchEnabled && <Search block={block} title={null} />}
+            </div>
+          )}
 
-            {isSearchEnabled && <Search block={block} title={null} />}
+          {isMobile && (
+            <div className={styles.mobileNav}>
+              <button
+                type='button'
+                className={cs('breadcrumb', 'button', styles.hamburgerButton)}
+                onClick={toggleMobileMenu}
+                aria-label='Toggle mobile menu'
+                aria-expanded={isMobileMenuOpen}
+              >
+                {isMobileMenuOpen ? <IoClose /> : <IoMenu />}
+              </button>
+            </div>
+          )}
+        </div>
+
+        {isMobile && isSearchEnabled && (
+          <div className={styles.hiddenSearchTrigger} aria-hidden='true'>
+            <Search block={block} title={null} />
           </div>
         )}
+      </header>
 
-        {isMobile && (
-          <div className={styles.mobileNav}>
-            <button
-              type='button'
-              className={cs('breadcrumb', 'button', styles.hamburgerButton)}
-              onClick={toggleMobileMenu}
-              aria-label='Toggle mobile menu'
-              aria-expanded={isMobileMenuOpen}
-            >
-              {isMobileMenuOpen ? <IoClose /> : <IoMenu />}
-            </button>
-          </div>
-        )}
-      </div>
-
+      {/* Mobile menu rendered OUTSIDE header to avoid z-index issues */}
       {isMobile && isMobileMenuOpen && (
         <>
           <div
             className={cs(styles.mobileMenuBackdrop, isDarkMode && 'dark-mode')}
             onClick={closeMobileMenu}
             aria-hidden='true'
+            style={{ 
+              position: 'fixed',
+              inset: 0,
+              zIndex: 999_998
+            }}
           />
 
-          <div className={cs(styles.mobileMenuDropdown, isDarkMode && 'dark-mode')}>
+          <div 
+            className={cs(styles.mobileMenuDropdown, isDarkMode && 'dark-mode')}
+            style={{
+              position: 'fixed',
+              top: 0,
+              right: 0,
+              zIndex: 999_999,
+              height: '100vh'
+            }}
+          >
             <div className={cs(styles.menuHeader, isDarkMode && 'dark-mode')}>
               <h3 className={cs(styles.menuTitle, isDarkMode && 'dark-mode')}>Navigation</h3>
               <div className={cs(styles.menuSubtitle, isDarkMode && 'dark-mode')}>Quick access</div>
@@ -205,6 +228,36 @@ export function NotionPageHeader({
               <IoHome />
               <span>Home</span>
             </Link>
+
+            {navigationLinks?.map((link, index) => {
+              if (!link?.pageId && !link?.url) {
+                return null
+              }
+
+              if (link.pageId) {
+                return (
+                  <components.PageLink
+                    href={mapPageUrl(link.pageId)}
+                    key={index}
+                    className={cs('breadcrumb', 'button', styles.mobileMenuItem, isDarkMode && 'dark-mode')}
+                    onClick={closeMobileMenu}
+                  >
+                    <span>{link.title}</span>
+                  </components.PageLink>
+                )
+              }
+
+              return (
+                <components.Link
+                  href={link.url}
+                  key={index}
+                  className={cs('breadcrumb', 'button', styles.mobileMenuItem, isDarkMode && 'dark-mode')}
+                  onClick={closeMobileMenu}
+                >
+                  <span>{link.title}</span>
+                </components.Link>
+              )
+            })}
 
             <button
               type='button'
@@ -234,12 +287,6 @@ export function NotionPageHeader({
           </div>
         </>
       )}
-
-      {isMobile && isSearchEnabled && (
-        <div className={styles.hiddenSearchTrigger} aria-hidden='true'>
-          <Search block={block} title={null} />
-        </div>
-      )}
-    </header>
+    </>
   )
 }
