@@ -6,7 +6,7 @@ export default siteConfig({
 
   // if you want to restrict pages to a single notion workspace (optional)
   // (this should be a Notion ID; see the docs for how to extract this)
-  rootNotionSpaceId: null,
+  rootNotionSpaceId: '25d2d08b-9923-81a6-a78a-000314192e6c',
 
   // basic site info (required)
   name: 'DocXninja - The AI Document Extraction Blog',
