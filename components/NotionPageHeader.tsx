@@ -1,5 +1,6 @@
 /* eslint-disable simple-import-sort/imports */
 import Link from 'next/link'
+import NextImage from 'next/image'
 import type * as types from 'notion-types'
 import { IoMoonSharp } from '@react-icons/all-files/io5/IoMoonSharp'
 import { IoSunnyOutline } from '@react-icons/all-files/io5/IoSunnyOutline'
@@ -97,7 +98,25 @@ export function NotionPageHeader({
             aria-label='Blog Home'
             style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
           >
-            <span className='header-brand-title'>DocXninja</span>
+            {isDarkMode ? (
+              <NextImage
+                src='/LogoLight.svg'
+                alt='DocXninja'
+                width={180}
+                height={45}
+                className='header-logo'
+                style={{ objectFit: 'contain' }}
+              />
+            ) : (
+              <NextImage
+                src='/LogoDark.svg'
+                alt='DocXninja'
+                width={180}
+                height={45}
+                className='header-logo'
+                style={{ objectFit: 'contain' }}
+              />
+            )}
           </Link>
         </div>
 
@@ -176,7 +195,7 @@ export function NotionPageHeader({
               <h3 className={cs(styles.menuTitle, isDarkMode && 'dark-mode')}>Navigation</h3>
               <div className={cs(styles.menuSubtitle, isDarkMode && 'dark-mode')}>Quick access</div>
             </div>
-            
+
             <Link
               href='/'
               className={cs('breadcrumb', 'button', styles.mobileMenuItem, isDarkMode && 'dark-mode')}

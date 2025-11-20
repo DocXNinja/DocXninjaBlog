@@ -14,7 +14,7 @@ export default siteConfig({
   author: 'Dilip Rajkumar',
 
   // open graph metadata (optional)
-  description: 'Example Next.js Notion Starter Kit Site',
+  description: 'The AI Document Extraction Blog',
 
   // social usernames (optional)
   twitter: 'docxninja',
@@ -22,7 +22,7 @@ export default siteConfig({
   linkedin: 'docxninja',
   // mastodon: '#', // optional mastodon profile URL, provides link verification
   // newsletter: '#', // optional newsletter URL
-  // youtube: '#', // optional youtube channel name or `channel/UCGbXXXXXXXXXXXXXXXXXXXXXX`
+  youtube: '@DocXNinja', // optional youtube channel name or `channel/UCGbXXXXXXXXXXXXXXXXXXXXXX`
 
   // default notion icon and cover images for site-wide consistency (optional)
   // page-specific values will override these site-wide defaults

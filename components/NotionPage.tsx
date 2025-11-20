@@ -284,7 +284,7 @@ export function NotionPage({
       // Create wrapper for comments
       const commentsWrapper = document.createElement('div')
       commentsWrapper.className = 'utterances-comments-wrapper'
-      
+
       // Create container div with proper styling classes
       const commentsContainer = document.createElement('div')
       commentsContainer.className = 'comments-container'
@@ -353,8 +353,8 @@ export function NotionPage({
 
   const socialImage = mapImageUrl(
     getPageProperty<string>('Social Image', block, recordMap) ||
-      (block as PageBlock).format?.page_cover ||
-      config.defaultPageCover,
+    (block as PageBlock).format?.page_cover ||
+    config.defaultPageCover,
     block
   )
 
@@ -392,7 +392,7 @@ export function NotionPage({
         showCollectionViewDropdown={false}
         showTableOfContents={showTableOfContents}
         minTableOfContentsItems={minTableOfContentsItems}
-  defaultPageIcon={safeDarkMode ? '/favicon.png' : '/favicon.png'}
+        defaultPageIcon={safeDarkMode ? '/favicon.png' : '/favicon.png'}
         defaultPageCover={config.defaultPageCover}
         defaultPageCoverPosition={config.defaultPageCoverPosition}
         mapPageUrl={siteMapPageUrl}
