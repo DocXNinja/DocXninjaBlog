@@ -12,6 +12,7 @@ import {
   NotionRenderer,
   useNotionContext
 } from 'react-notion-x'
+import { getPageTableOfContents } from 'notion-utils'
 import { EmbeddedTweet, TweetNotFound, TweetSkeleton } from 'react-tweet'
 import { useSearchParam } from 'react-use'
 
@@ -215,11 +216,57 @@ export function NotionPage({
 
   const { isDarkMode } = useDarkMode()
   const [hasMounted, setHasMounted] = React.useState(false)
+  const [isTocCollapsed, setIsTocCollapsed] = React.useState(false)
 
   // Prevent hydration mismatch by only applying dark mode after mounting
   React.useEffect(() => {
     setHasMounted(true)
   }, [])
+
+  const handleToggleToc = React.useCallback(() => {
+    setIsTocCollapsed((prev) => !prev)
+  }, [])
+
+  const getHeaderHeight = React.useCallback(() => {
+    const rootStyle = getComputedStyle(document.documentElement)
+    const cssVar = rootStyle.getPropertyValue('--notion-header-height').trim()
+    const cssVarPx = cssVar ? parseInt(cssVar, 10) : 0
+
+    const headerMain = document.querySelector('.notion-header') as HTMLElement | null
+    const headerNav = document.querySelector('.notion-nav-header') as HTMLElement | null
+    const h1 = headerMain?.offsetHeight || 0
+    const h2 = headerNav?.offsetHeight || 0
+    return Math.max(cssVarPx, h1, h2)
+  }, [])
+
+  const handleTocItemClick = React.useCallback((event: React.MouseEvent, id: string) => {
+    event.preventDefault()
+
+    const target =
+      (document.getElementById(id) as HTMLElement | null) ||
+      (document.querySelector(`[data-id="${id}"]`) as HTMLElement | null)
+
+    if (target) {
+      const headerHeight = getHeaderHeight()
+
+      const top = target.getBoundingClientRect().top + window.scrollY - headerHeight - 8
+      window.scrollTo({ top, behavior: 'smooth' })
+      window.history.replaceState(null, '', `#${id}`)
+    }
+  }, [])
+
+  React.useEffect(() => {
+    if (config.isServer) return
+
+    const pageEl = document.querySelector('.notion-page')
+    if (!pageEl) return
+
+    pageEl.classList.toggle('toc-collapsed', isTocCollapsed)
+
+    return () => {
+      pageEl.classList.remove('toc-collapsed')
+    }
+  }, [isTocCollapsed])
 
   // Use a safe dark mode value that prevents hydration mismatch
   const safeDarkMode = hasMounted ? isDarkMode : false
@@ -243,18 +290,70 @@ export function NotionPage({
   const showTableOfContents = !!isBlogPost
   const minTableOfContentsItems = 3
 
-  const pageAside = React.useMemo(
-    () => (
-      <PageAside
-        block={block!}
-        recordMap={recordMap!}
-        isBlogPost={isBlogPost}
-      />
-    ),
-    [block, recordMap, isBlogPost]
+  const tableOfContents = React.useMemo(
+    () => {
+      if (!block || !recordMap) return []
+      try {
+        return getPageTableOfContents(block as PageBlock, recordMap)
+      } catch (e) {
+        console.warn('Failed to generate table of contents:', e)
+        return []
+      }
+    },
+    [block, recordMap]
   )
 
+  const hasToc = showTableOfContents && tableOfContents.length >= minTableOfContentsItems
+
   const footer = React.useMemo(() => <Footer isBlogPost={isBlogPost} />, [isBlogPost])
+
+  // Ensure headings have anchor IDs matching TOC ids for reliable scrolling
+  React.useEffect(() => {
+    if (!hasToc || config.isServer) return
+
+    const assignIds = () => {
+      tableOfContents.forEach((item) => {
+        const id = item.id
+        if (!id) return
+
+        if (document.getElementById(id)) return
+
+        let el: HTMLElement | null = null
+
+        el = document.querySelector(`[data-id="${id}"]`) as HTMLElement | null
+        if (!el) {
+          el = document.querySelector(`[data-block-id="${id}"]`) as HTMLElement | null
+        }
+
+        if (!el) {
+          const titleEls = Array.from(
+            document.querySelectorAll('.notion-page .notion-h-title')
+          ) as HTMLElement[]
+          const match = titleEls.find(
+            (e) => e.textContent?.trim() === item.text.trim()
+          )
+          if (match) {
+            el = (match.closest('.notion-h, .notion-h1, .notion-h2, .notion-h3') as HTMLElement) || match.parentElement
+          }
+        }
+
+        if (el) {
+          try {
+            el.id = id
+            // Ensure heading remains visible beneath sticky header
+            const headerHeight = getHeaderHeight()
+            el.style.scrollMarginTop = `${headerHeight + 12}px`
+          } catch {
+            // no-op
+          }
+        }
+      })
+    }
+
+    // run after NotionRenderer has flushed the DOM
+    const t = setTimeout(assignIds, 0)
+    return () => clearTimeout(t)
+  }, [hasToc, tableOfContents, recordMap, getHeaderHeight])
 
   // Inject Utterances comments into .notion-page container after render
   React.useEffect(() => {
@@ -390,16 +489,79 @@ export function NotionPage({
         fullPage={!isLiteMode}
         previewImages={!!recordMap.preview_images}
         showCollectionViewDropdown={false}
-        showTableOfContents={showTableOfContents}
+        showTableOfContents={false}
         minTableOfContentsItems={minTableOfContentsItems}
         defaultPageCover={config.defaultPageCover}
         defaultPageCoverPosition={config.defaultPageCoverPosition}
         mapPageUrl={siteMapPageUrl}
         mapImageUrl={mapImageUrl}
         searchNotion={config.isSearchEnabled ? searchNotion : undefined}
-        pageAside={pageAside}
         footer={footer}
       />
+
+      {hasToc && (
+        <>
+          <button
+            type='button'
+            className={cs('notion-toc-toggle', isTocCollapsed && 'collapsed')}
+            aria-label={isTocCollapsed ? 'Show table of contents' : 'Hide table of contents'}
+            aria-pressed={!isTocCollapsed}
+            title='Table of Contents'
+            onClick={handleToggleToc}
+          >
+            <svg
+              aria-hidden='true'
+              focusable='false'
+              viewBox='0 0 24 24'
+              width='20'
+              height='20'
+            >
+              <path
+                d='M10 6l6 6-6 6'
+                fill='none'
+                stroke='currentColor'
+                strokeWidth='2'
+                strokeLinecap='round'
+                strokeLinejoin='round'
+              />
+            </svg>
+          </button>
+
+          {!isTocCollapsed && (
+            <aside className='notion-page-aside'>
+              <div className='notion-aside-table-of-contents'>
+                <div className='notion-aside-table-of-contents-header'>Table of Contents</div>
+                {tableOfContents.map((tocItem) => (
+                  <a
+                    key={tocItem.id}
+                    href={`#${tocItem.id}`}
+                    onClick={(event) => handleTocItemClick(event, tocItem.id)}
+                    className={cs(
+                      'notion-table-of-contents-item',
+                      `notion-table-of-contents-item-indent-level-${tocItem.indentLevel}`
+                    )}
+                  >
+                    <span
+                      className='notion-table-of-contents-item-body'
+                      style={{
+                        display: 'inline-block',
+                        marginLeft: tocItem.indentLevel * 16
+                      }}
+                    >
+                      {tocItem.text}
+                    </span>
+                  </a>
+                ))}
+              </div>
+              <PageAside
+                block={block!}
+                recordMap={recordMap!}
+                isBlogPost={isBlogPost}
+              />
+            </aside>
+          )}
+        </>
+      )}
     </>
   )
 }
