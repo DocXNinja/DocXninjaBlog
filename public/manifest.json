@@ -1,6 +1,6 @@
 {
-  "name": "Next.js Notion Starter Kit",
-  "short_name": "Starter Kit",
+  "name": "DocXNinja Blog",
+  "short_name": "docxninja-blog",
   "icons": [
     {
       "src": "/favicon.png",
