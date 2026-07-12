@@ -5,6 +5,7 @@ import { type PageBlock } from 'notion-types'
 import {
   getBlockIcon,
   getBlockTitle,
+  getBlockValue,
   getPageProperty,
   isUrl,
   parsePageId
@@ -40,8 +41,7 @@ export default async function OGImage(
   console.log(pageInfo)
 
   return new ImageResponse(
-    (
-      <div
+    <div
         style={{
           position: 'relative',
           width: '100%',
@@ -57,6 +57,7 @@ export default async function OGImage(
         {pageInfo.image && (
           <img
             src={pageInfo.image}
+            alt=""
             style={{
               position: 'absolute',
               width: '100%',
@@ -142,6 +143,7 @@ export default async function OGImage(
           >
             <img
               src={pageInfo.authorImage}
+              alt=""
               style={{
                 width: '100%',
                 height: '100%'
@@ -150,8 +152,7 @@ export default async function OGImage(
             />
           </div>
         )}
-      </div>
-    ),
+      </div>,
     {
       width: 1200,
       height: 630,
@@ -178,7 +179,7 @@ export async function getNotionPageInfo({
   const recordMap = await notion.getPage(pageId)
 
   const keys = Object.keys(recordMap?.block || {})
-  const block = recordMap?.block?.[keys[0]!]?.value
+  const block = getBlockValue(recordMap?.block?.[keys[0]!])
 
   if (!block) {
     throw new Error('Invalid recordMap for page')

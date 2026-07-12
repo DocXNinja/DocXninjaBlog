@@ -6,6 +6,7 @@ import { FaTwitter } from '@react-icons/all-files/fa/FaTwitter'
 import { FaYoutube } from '@react-icons/all-files/fa/FaYoutube'
 import { FaZhihu } from '@react-icons/all-files/fa/FaZhihu'
 import { IoHome } from '@react-icons/all-files/io5/IoHome'
+import Link from 'next/link'
 import * as React from 'react'
 
 import * as config from '@/lib/config'
@@ -25,9 +26,9 @@ export function FooterImpl({ isBlogPost = false }: FooterProps) {
     <footer className={isBlogPost ? styles.footer : styles.footerHomePage}>
       {isBlogPost && (
         <div className={styles.footerSection}>
-          <a href="/" className={styles.homeButton} title="Home">
+          <Link href="/" className={styles.homeButton} title="Home">
             <IoHome />
-          </a>
+          </Link>
         </div>
       )}
 
